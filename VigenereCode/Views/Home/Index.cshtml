@@ -1,0 +1,84 @@
+﻿@model VigenereCode.ViewModels.HomeIndexViewModel
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - VigenereCode</title>
+
+    <style>
+        button, label {
+            background-color: white;
+            border: 2px solid #007fff;
+            color: black;
+            padding: 10px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            -webkit-transition-duration: 0.4s; 
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+            button:hover, label:hover {
+                background-color: #007fff;
+                color: white;
+            }
+    </style>
+
+</head>
+<body>
+    <h2>Vigenere Code Decrypter/Encrypter</h2>
+    <br>
+    <form asp-controller="Home" enctype="multipart/form-data" method="post">
+        <input type="file" name="file" hidden="hidden" id="fileUpload" accept=".txt, .docx" />
+        <div style="float:left">
+            <label for="fileUpload">
+                Choose file
+            </label>
+            <button type="submit" asp-action="OpenFile" id="tyr">Open file</button>
+            <div id="uploadFileName"></div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <h3><font color="red">@Model.Warning</font></h3>
+        <br>
+        <h6>Source text:</h6>
+        <textarea asp-for="SourceText" style="overflow:auto;resize:both" cols="70" rows="5" placeholder="Enter the text...">@Model.SourceText</textarea>
+        <br>
+        <br>
+        Key: <input type="text" asp-for="Key" value="@Model.Key" />
+        <br>
+        <br>
+        <button type="submit" name="command" value="Encrypt" asp-action="Convert">Encrypt</button>
+        <button type="submit" asp-action="Convert">Decrypt</button>
+        <br>
+        <br>
+        <h6>Result:</h6>
+        <textarea asp-for="Result" style="overflow:auto;resize:both" cols="70" rows="5">@Model.Result</textarea>
+        <br>
+        <br>
+        Enter the name of the file: <input type="text" asp-for="DownloadFileName" value="@Model.DownloadFileName" />
+        <button type="submit" name="command" value="downloadTxtFile" asp-action="DownloadFile">Download txt file</button>
+        <button type="submit" name="command" value="downloadDocxFile" asp-action="DownloadFile">Download docx file</button>
+    </form>
+
+    <script>
+        var input = document.getElementById('fileUpload');
+        var infoArea = document.getElementById('uploadFileName');
+
+        input.addEventListener('change', showFileName);
+
+        function showFileName(event) {
+            var input = event.srcElement;
+            var fileName = input.files[0].name;
+            infoArea.textContent = 'Choosed file: ' + fileName;
+        }
+    </script>
+
+</body>
+</html>
+
