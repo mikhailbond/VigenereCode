@@ -17,17 +17,18 @@
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
-            -webkit-transition-duration: 0.4s; 
+            -webkit-transition-duration: 0.4s;
             transition-duration: 0.4s;
             cursor: pointer;
         }
+
             button:hover, label:hover {
                 background-color: #007fff;
                 color: white;
             }
     </style>
-
 </head>
+
 <body>
     <h2>Vigenere Code Decrypter/Encrypter</h2>
     <br>
@@ -35,9 +36,9 @@
         <input type="file" name="file" hidden="hidden" id="fileUpload" accept=".txt, .docx" />
         <div style="float:left">
             <label for="fileUpload">
-                Choose file
+                Select file
             </label>
-            <button type="submit" asp-action="OpenFile" id="tyr">Open file</button>
+            <button type="submit" asp-action="OpenFile">Open file</button>
             <div id="uploadFileName"></div>
         </div>
         <br>
