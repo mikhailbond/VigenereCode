@@ -54,13 +54,21 @@ namespace VigenereCode.Controllers
             string textFromFile;
             byte[] arr;
 
-            using (MemoryStream ms = new MemoryStream())
+            try
             {
-                await file.CopyToAsync(ms);
-                arr = new byte[ms.Length];
-                ms.Position = 0;
-                ms.Read(arr, 0, (int)ms.Length);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await file.CopyToAsync(ms);
+                    arr = new byte[ms.Length];
+                    ms.Position = 0;
+                    ms.Read(arr, 0, (int)ms.Length);
+                }
             }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
 
             int symbolsCounter = 0;
             int lettersCount = 0;
@@ -91,31 +99,38 @@ namespace VigenereCode.Controllers
         {
             string textFromFile;
 
-            using (MemoryStream ms = new MemoryStream())
+            try
             {
-                await file.CopyToAsync(ms);
-
-                using (WordprocessingDocument doc = WordprocessingDocument.Open(ms, false))
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    StringBuilder wordDocumentText = new StringBuilder();
-                    IEnumerable<Paragraph> paragraphElements =
-                        doc.MainDocumentPart.Document.Body.Descendants<Paragraph>();
+                    await file.CopyToAsync(ms);
 
-                    foreach (Paragraph p in paragraphElements)
+                    using (WordprocessingDocument doc = WordprocessingDocument.Open(ms, false))
                     {
-                        IEnumerable<Text> textElements = p.Descendants<Text>();
+                        StringBuilder wordDocumentText = new StringBuilder();
+                        IEnumerable<Paragraph> paragraphElements =
+                            doc.MainDocumentPart.Document.Body.Descendants<Paragraph>();
 
-                        foreach (Text t in textElements)
+                        foreach (Paragraph p in paragraphElements)
                         {
-                            wordDocumentText.Append(t.Text);
-                        }
+                            IEnumerable<Text> textElements = p.Descendants<Text>();
 
-                        wordDocumentText.AppendLine();
+                            foreach (Text t in textElements)
+                            {
+                                wordDocumentText.Append(t.Text);
+                            }
+
+                            wordDocumentText.AppendLine();
+                        }
+                        textFromFile = wordDocumentText.ToString();
                     }
-                    textFromFile = wordDocumentText.ToString();
                 }
             }
-
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
             return textFromFile.Replace("\n", string.Empty).Replace("\r", string.Empty);
         }
 
@@ -175,28 +190,45 @@ namespace VigenereCode.Controllers
 
         public FileContentResult DownloadTxtFile(string text, string fileName)
         {
-            using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(text)))
+            try
             {
-                return File(ms.ToArray(), "text/plain; charset=utf-8", fileName + ".txt");
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(text)))
+                {
+                    return File(ms.ToArray(), "text/plain; charset=utf-8", fileName + ".txt");
+                }
             }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+           
         }
 
         public FileContentResult DownloadDocxFile(string text, string fileName)
         {
-            using (MemoryStream ms = new MemoryStream())
+            try
             {
-                using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
-                    mainPart.Document = new Document();
-                    Body body = mainPart.Document.AppendChild(new Body());
-                    Paragraph para = body.AppendChild(new Paragraph());
-                    Run run = para.AppendChild(new Run());
-                    run.AppendChild(new Text(text));
-                    wordDocument.Close();
-                    ms.Position = 0;
-                    return File(ms.ToArray(), "application/vnd.openxmlformats", fileName + ".docx");
+                    using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
+                    {
+                        MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
+                        mainPart.Document = new Document();
+                        Body body = mainPart.Document.AppendChild(new Body());
+                        Paragraph para = body.AppendChild(new Paragraph());
+                        Run run = para.AppendChild(new Run());
+                        run.AppendChild(new Text(text));
+                        wordDocument.Close();
+                        ms.Position = 0;
+                        return File(ms.ToArray(), "application/vnd.openxmlformats", fileName + ".docx");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
             }
         }
     }
